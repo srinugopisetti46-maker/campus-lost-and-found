@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Campus Lost & Found</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="container">
+
+{% if page == "user_login" %}
+<h2>User Login</h2>
+
+{% if login_error %}<p class="error">{{ login_error }}</p>{% endif %}
+
+<form method="POST" action="/login_user">
+<input name="username" placeholder="Username" required>
+<input type="password" name="password" placeholder="Password" required>
+<button class="blue">Login</button>
+</form>
+
+<h3>Signup</h3>
+<form method="POST" action="/signup">
+<input name="username" placeholder="New Username" required>
+<input type="password" name="password" placeholder="New Password" required>
+<button class="green">Signup</button>
+</form>
+
+<a href="/admin_login">Admin Login →</a>
+{% endif %}
+
+{% if page == "admin_login" %}
+<h2>Admin Login</h2>
+
+<form method="POST" action="/login_admin">
+<input name="username" required>
+<input type="password" name="password" required>
+<button class="dark">Login</button>
+</form>
+
+<a href="/">← Back</a>
+{% endif %}
+
+{% if page == "user_home" %}
+<h2>User Panel</h2>
+
+<!-- SUCCESS MESSAGE -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for msg in messages %}
+      <p class="success">{{ msg }}</p>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<h3>Report Lost</h3>
+<form method="POST" action="/report_lost">
+<input name="item" placeholder="Item">
+<input name="details" placeholder="Details">
+<input name="place" placeholder="Place">
+<input name="contact" placeholder="Phone/Email">
+<button class="blue">Submit</button>
+</form>
+
+<h3>Report Found</h3>
+<form method="POST" action="/report_found">
+<input name="item" placeholder="Item">
+<input name="details" placeholder="Details">
+<input name="place" placeholder="Place">
+<input name="contact" placeholder="Phone/Email">
+<button class="green">Submit</button>
+</form>
+
+<a href="/logout"><button class="dark">Logout</button></a>
+{% endif %}
+
+{% if page == "admin_dashboard" %}
+<h2>Admin Dashboard</h2>
+
+<div class="stats">
+<div class="stat-box">Users: {{ total_users }}</div>
+<div class="stat-box">Lost: {{ total_lost }}</div>
+<div class="stat-box">Found: {{ total_found }}</div>
+<div class="stat-box">Matches: {{ total_matches }}</div>
+</div>
+
+{% for l,f in matches %}
+<div class="match-box">
+<strong>{{ l[1] }}</strong> ↔ <strong>{{ f[1] }}</strong><br>
+📞 {{ l[6] }} | {{ f[6] }}
+
+<br>
+<a href="/generate_qr/{{l[0]}}/{{f[0]}}">
+<button class="green">QR</button>
+</a>
+</div>
+{% endfor %}
+
+<a href="/logout"><button class="dark">Logout</button></a>
+{% endif %}
+
+{% if page == "qr" %}
+<h2>QR Code</h2>
+<img src="/{{ qr }}" width="200">
+{% endif %}
+
+</div>
+
+</body>
+</html>
